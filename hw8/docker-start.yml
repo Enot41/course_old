@@ -1,0 +1,53 @@
+- name: build host
+  hosts: db
+  become: yes
+
+  tasks:
+  - name: Install docker
+    apt:
+      pkg: 
+      - docker.io
+      - git
+      - python3
+      - python3-pip
+      update_cache: yes
+      state: present
+  - name: Install pip docker
+    pip:
+      name: docker
+  - name: Clone Git
+    git:
+      repo: https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
+      dest: /tmp/boxfuse
+      clone: yes
+  - name: Create dir ROOT
+    file:
+      path: /tmp/ROOT
+      state: directory
+      mode: '0777'
+  - name: Docker started
+    service: 
+      name: docker
+      state: started
+  - name: Build through docker
+    docker_container:
+      name: Maven
+      image: maven:alpine
+      volumes: "/tmp/boxfuse:/usr/src/mymaven"
+      working_dir: /usr/src/mymaven
+      command: mvn verify 
+      detach: yes
+      auto_remove: yes
+      tmpfs: /tmp/boxfuse
+  - name: Copy War
+    shell: cp -r /tmp/boxfuse/target/hello-1.0.war /tmp/ROOT/ROOT.war
+  - name: Tomcat Docker
+    docker_container:
+      name: Tomcat9
+      image: tomcat:alpine
+      state: started
+      ports:
+        - "8080:8080"
+      volumes: "/tmp/ROOT:/usr/local/tomcat/webapps"
+      detach: yes
+      auto_remove: yes

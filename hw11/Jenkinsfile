@@ -1,0 +1,40 @@
+pipeline {
+    agent { 
+        docker {
+            image '192.168.137.163:8123/build_docker:latest'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
+    stages {
+        stage ('Copy source code boxfuse') {
+            steps {
+                 git 'https://github.com/Enot41/boxfuse-sample-java-war-hello.git'    
+            }
+        }
+         stage ('Build war file') {
+             steps {
+                 sh 'mvn package'
+             }
+        }
+        stage ('Copy Dockerfile Deploy_Docker') {
+            steps {
+                git 'https://github.com/Enot41/hw11deploy.git'
+            }
+        }
+        stage ('Make docker image deploy') {
+            steps {
+                sh 'docker build -t deploy_docker .'
+                sh 'docker tag deploy_docker 192.168.137.163:8123/deploy_docker'
+                withDockerRegistry(credentialsId: 'ebccc339-ec80-407f-aaa3-09cf7c1aa354', url: 'http://192.168.137.163:8123') {
+                    sh 'docker push 192.168.137.163:8123/deploy_docker'
+                }
+            }
+        }
+        stage ('Deploy docker image') {
+            steps {
+                sh 'docker run -it -d -p 8081:8080 192.168.137.163:8123/deploy_docker'
+            }
+        }
+        
+    }
+}

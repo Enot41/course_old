@@ -1,0 +1,8 @@
+#cloud-config
+users:
+  - name: jenkins
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC6cmqPZUCmbdGySPMhGJ1cAIwTwVx7fKQVEjAfgksMIrK/1Kl136b6irRDRptE8mhDtysimRs8dog0Od8r8FX8ZaHIdo2DVtb8/79hBGzvRxpGu0rm0DGGrE3tNE2R59jfwjzJugHGu9h94vDPymt2ztS86LcUPC6fCrhg7gSkIpylWP6Y4oiB++tGpaoeCMQRVs4ziDapUkykRZKTJ/UkPSTZly1BI3mU+7Gb8Ha8ljADLBIh+YPTTuF4vjjJ8x9QcfAaNtp7xdAJjdDKvy52z41PMvyMYp1GUaZmQSxxKnVfVPEXcflJYVy2rxtukr5GNzplzJ++gc4kxWhd5dK3BEPoWw6e7Ix80gBSbHPBlOW+xNLtYyNWIfR2cGVXPDGo9ABt/ZmTnckFL+KwBXgcJ+TcPWdHFV4eQChLSdOYU8wPpC+/Fbv8QdrwIS97idwpyu9G8ojrfXnThIh+Hk4RZ3ba1ALAa2KkaUCIOmjhf1eKdao99jrXH1xosI8YKNs= jenkins@jenkins

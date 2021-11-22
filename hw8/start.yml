@@ -1,0 +1,45 @@
+- name: build host
+  hosts: db
+  become: yes
+
+  tasks:
+  - name: Install maven and build
+    apt:
+      pkg: 
+      - maven 
+      - git 
+      - default-jdk
+      update_cache: yes
+      state: present
+  - name: Clone Git
+    git:
+      repo: https://github.com/boxfuse/boxfuse-sample-java-war-hello.git
+      dest: /tmp/boxfuse
+      clone: yes
+  - name: Build Maven
+    shell: mvn package
+    args:
+      chdir: /tmp/boxfuse/
+  - name: Copy war
+    fetch:
+      src: /tmp/boxfuse/target/hello-1.0.war
+      dest: /tmp/ROOT.war
+      flat: yes
+
+- name: deploy
+  hosts: web
+  become: yes
+
+  tasks:
+  - name: install tomcat9
+    apt:
+      name: tomcat9
+      state: present
+  - name: Copy war
+    copy:
+      src: /tmp/ROOT.war
+      dest: /var/lib/tomcat9/webapps/ROOT1.war
+  - name: Tomcat9 started
+    service: 
+      name: tomcat9
+      state: started

@@ -1,0 +1,21 @@
+pipeline {
+    agent any 
+    tools {
+        terraform 'terraform'
+    }
+    stages {
+        stage ('Create PC YC') {
+            steps {
+                sh 'terraform -chdir=tf/ init'
+                sh 'terraform -chdir=tf/ apply --auto-approve'
+            }
+        }
+        stage ('Ansible') {
+            steps {
+                sleep(45)
+                ansiblePlaybook credentialsId: 'yandexcloud', disableHostKeyChecking: true, installation: 'ansible2', inventory: 'tf/dev.inv', playbook: 'ansible/playbook.yml'
+            }
+        }
+    }
+}
+

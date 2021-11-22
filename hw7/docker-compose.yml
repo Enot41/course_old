@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+    maven:
+        build: ./dep
+        volumes:
+            - type: volume
+              source: data-volume
+              target: /tmp
+    java:
+        image: tomcat:alpine
+        volumes:
+            - type: volume
+              source: data-volume 
+              target: /usr/local/tomcat/webapps
+        ports:
+            - "8080:8080"
+volumes:
+    data-volume:
